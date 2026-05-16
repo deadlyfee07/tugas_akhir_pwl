@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'TokoOnline') - TokoOnline</title>
+    <title>@yield('title', 'SerbaKlik ID') - SerbaKlik ID</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -32,7 +32,7 @@
                 <div class="flex items-center space-x-8">
                     <a href="/" class="flex items-center space-x-2">
                         <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                        <span class="text-xl font-bold text-gray-900">Toko<span class="text-primary-600">Online</span></span>
+                        <span class="text-xl font-bold text-gray-900">SerbaKlik <span class="text-primary-600">ID</span></span>
                     </a>
                     <div class="hidden md:flex space-x-6 text-sm font-medium text-gray-600">
                         <a href="/products" class="hover:text-primary-600 transition">Produk</a>
@@ -89,7 +89,7 @@
                 <div class="col-span-2 md:col-span-1">
                     <div class="flex items-center space-x-2 mb-4">
                         <svg class="w-6 h-6 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                        <span class="text-lg font-bold text-white">Toko<span class="text-primary-400">Online</span></span>
+                        <span class="text-lg font-bold text-white">SerbaKlik <span class="text-primary-400">ID</span></span>
                     </div>
                     <p class="text-sm">Platform e-commerce API untuk pengalaman belanja online yang modern dan terpercaya.</p>
                 </div>
@@ -122,7 +122,7 @@
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
-                &copy; {{ date('Y') }} TokoOnline. All rights reserved.
+                &copy; {{ date('Y') }} SerbaKlik ID. All rights reserved.
             </div>
         </div>
     </footer>
