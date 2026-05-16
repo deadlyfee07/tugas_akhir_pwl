@@ -21,16 +21,40 @@ class PaymentController extends Controller
         }
 
         $request->validate([
-            'payment_method' => ['nullable', 'string', 'max:50'],
+            'payment_method' => ['required', 'string', 'in:dana,shopeepay,gopay,bri_va,bca_va,mandiri_va'],
         ]);
 
-        $paymentMethod = $request->payment_method ?? 'dummy';
+        $method = $request->payment_method;
+        $vaNumber = $this->generateVaNumber($method);
 
         $payment = $order->payment()->create([
-            'payment_method' => $paymentMethod,
-            'payment_status' => 'success',
+            'payment_method' => $method,
+            'payment_status' => 'pending',
             'amount' => $order->total_amount,
-            'transaction_id' => strtoupper('TXN-'.Str::random(16)),
+            'transaction_id' => $vaNumber,
+        ]);
+
+        return new PaymentResource($payment);
+    }
+
+    public function confirm(Request $request, Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Order not found.'], 404);
+        }
+
+        $payment = $order->payment;
+
+        if (!$payment) {
+            return response()->json(['message' => 'No payment found.'], 404);
+        }
+
+        if ($payment->payment_status === 'success') {
+            return response()->json(['message' => 'Payment already confirmed.'], 422);
+        }
+
+        $payment->update([
+            'payment_status' => 'success',
             'paid_at' => now(),
         ]);
 
@@ -39,6 +63,22 @@ class PaymentController extends Controller
             'payment_status' => 'paid',
         ]);
 
-        return new PaymentResource($payment);
+        return new PaymentResource($payment->fresh());
+    }
+
+    private function generateVaNumber(string $method): string
+    {
+        $prefixes = [
+            'dana' => '88888',
+            'shopeepay' => '99999',
+            'gopay' => '77777',
+            'bri_va' => '11111',
+            'bca_va' => '22222',
+            'mandiri_va' => '33333',
+        ];
+
+        $prefix = $prefixes[$method] ?? '00000';
+
+        return $prefix . strtoupper(Str::random(10));
     }
 }

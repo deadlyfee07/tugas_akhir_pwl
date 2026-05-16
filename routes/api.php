@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show']);
 
     Route::post('/orders/{order}/pay', [PaymentController::class, 'pay']);
+    Route::post('/orders/{order}/confirm-payment', [PaymentController::class, 'confirm']);
 
     Route::middleware('admin')->prefix('admin')->group(function () {
         Route::post('/categories', [Admin\CategoryController::class, 'store']);

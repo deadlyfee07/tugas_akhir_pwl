@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [WebOrderController::class, 'index']);
     Route::get('/orders/{order}', [WebOrderController::class, 'show']);
     Route::post('/orders/{order}/pay', [WebPaymentController::class, 'pay']);
+    Route::post('/orders/{order}/confirm-payment', [WebPaymentController::class, 'confirm']);
 
     Route::middleware('admin')->prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard']);

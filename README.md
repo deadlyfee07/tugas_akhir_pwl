@@ -1,13 +1,13 @@
-# Toko Online - E-Commerce API
+# SerbaKlik ID - E-Commerce API
 
-Sistem E-Commerce API-driven sederhana berbasis Laravel 12 dengan fitur manajemen produk, kategori, keranjang belanja, checkout, dan payment dummy.
+Sistem E-Commerce API-driven sederhana berbasis Laravel 12 dengan fitur manajemen produk, kategori, keranjang belanja, checkout, dan pembayaran multi-metode.
 
 ## Tech Stack
 
 - **Backend:** Laravel 12 (PHP ^8.2)
 - **Auth:** Laravel Breeze (API stack) + Laravel Sanctum (token-based)
 - **Database:** SQLite (default), support MySQL/MariaDB/PostgreSQL/SQLServer
-- **Frontend:** Vite 7 + Tailwind CSS v4 (untuk halaman welcome saja, sistem full API)
+- **Frontend:** Blade templates + Tailwind CSS (CDN), tersedia Web UI dan API
 
 ## Fitur
 
@@ -21,7 +21,8 @@ Sistem E-Commerce API-driven sederhana berbasis Laravel 12 dengan fitur manajeme
 | Keranjang Belanja | ✅ | `/api/cart` (add, update, remove) |
 | Checkout | ✅ | `POST /api/checkout` |
 | Riwayat Pesanan | ✅ | `/api/orders` |
-| Payment Dummy | ✅ | `POST /api/orders/{id}/pay` |
+| Pembayaran Multi-Metode | ✅ | `POST /api/orders/{id}/pay` (DANA, ShopeePay, GoPay, BRI/BCA/Mandiri VA) |
+| Konfirmasi Pembayaran | ✅ | `POST /api/orders/{id}/confirm-payment` |
 | Manajemen Pesanan (Admin) | ✅ | `/api/admin/orders` (list, detail, update status) |
 | Role & Authorization | ✅ | Admin (gate/policy) + Sanctum middleware |
 
@@ -108,11 +109,34 @@ Login Admin → CRUD Kategori & Produk → Lihat Semua Pesanan → Update Status
 ```
 1. Customer menambahkan produk ke cart
 2. Cart menyimpan product_id, quantity, price saat itu
-3. Customer POST /api/checkout
+3. Customer POST /api/checkout (atau via Web UI)
 4. Sistem: validasi stok → create Order → create OrderItems → kurangi stok → hapus cart
-5. Customer POST /api/orders/{id}/pay
-6. Sistem: create Payment (dummy) → update order status jadi "paid"
+5. Customer pilih metode pembayaran: DANA, ShopeePay, GoPay, BRI VA, BCA VA, Mandiri VA
+6. Sistem: generate Virtual Account / kode bayar, simpan payment status "pending"
+7. Customer bayar secara eksternal, lalu POST /api/orders/{id}/confirm-payment
+8. Sistem: update payment status jadi "success", order status jadi "paid"
 ```
+
+## Web UI (Blade)
+
+Selain API, tersedia juga antarmuka web berbasis Blade untuk admin dan customer:
+
+| Halaman | URL |
+|---------|-----|
+| Beranda | `/` |
+| Produk | `/products` |
+| Detail Produk | `/products/{id}` |
+| Kategori | `/categories` |
+| Login | `/login` |
+| Register | `/register` |
+| Keranjang | `/cart` |
+| Checkout | `/checkout` |
+| Pesanan Saya | `/orders` |
+| Detail Pesanan + Bayar | `/orders/{id}` |
+| Dashboard Admin | `/admin` |
+| Admin - Kelola Produk | `/admin/products` |
+| Admin - Kelola Kategori | `/admin/categories` |
+| Admin - Kelola Pesanan | `/admin/orders` |
 
 ## API Documentation
 
@@ -178,7 +202,8 @@ Login Admin → CRUD Kategori & Produk → Lihat Semua Pesanan → Update Status
 | POST | `/api/checkout` | Proses checkout |
 | GET | `/api/orders` | Riwayat pesanan |
 | GET | `/api/orders/{id}` | Detail pesanan |
-| POST | `/api/orders/{id}/pay` | Bayar pesanan (dummy) |
+| POST | `/api/orders/{id}/pay` | Buat pembayaran, pilih metode |
+| POST | `/api/orders/{id}/confirm-payment` | Konfirmasi pembayaran selesai |
 
 **Add to Cart:**
 ```json
@@ -195,12 +220,14 @@ Login Admin → CRUD Kategori & Produk → Lihat Semua Pesanan → Update Status
 }
 ```
 
-**Pay Order:**
+**Pay Order (pilih metode):**
 ```json
 {
-  "payment_method": "dummy"
+  "payment_method": "dana"
 }
 ```
+
+`payment_method` values: `dana`, `shopeepay`, `gopay`, `bri_va`, `bca_va`, `mandiri_va`
 
 ### Admin Endpoints (Sanctum + Admin Middleware)
 
