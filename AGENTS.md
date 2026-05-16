@@ -1,11 +1,12 @@
 # Project_Toko_Online
 
 ## Stack
-- Laravel 12 (PHP ^8.2), vanilla JS; no frontend framework
+- Laravel 12 (PHP ^8.2), Blade templates; no frontend JS framework
 - Auth: Laravel Breeze (API stack) + Sanctum (token-based)
 - SQLite default; also configured for MySQL/MariaDB/PgSQL/SQLServer
 - Queue/cache/session: `database` (SQLite tables); Mail: `log`
 - Admin role via `users.role` column + `Gate::policy` for Category/Product/Order
+- ERD in README.md; 12 migrations; Order statuses: `pending`/`paid`/`processed`/`shipped`/`delivered`/`cancelled`
 
 ## Commands
 | Command | What it does |
@@ -16,45 +17,37 @@
 | `./vendor/bin/pint` | PHP lint (default Laravel rules) |
 | `php artisan db:seed` | Seed admin (`admin@toko.com`/`password`) + customer + sample products |
 
+**Note:** Both `composer setup` and `composer dev` require `package.json` (doesn't exist) — will fail.
+
+## Web UI (Blade)
+Full Blade web UI at `routes/web.php` alongside the API:
+`/products`, `/categories`, `/cart`, `/checkout`, `/orders`, `/admin/*`
+
 ## Testing
-- PHPUnit 11 via `php artisan test` (or `composer test`)
-- In-memory SQLite in tests (`phpunit.xml` sets `DB_DATABASE=:memory:`, `QUEUE_CONNECTION=sync`)
-- 12 tests: 2 Unit (isAdmin, cart total), 2 Feature (products API pagination, cart auth guard), 8 Breeze auth
-- Factories: `User::factory()->admin()` creates admin role; `->unverified()` for unverified email
-- All tests use `RefreshDatabase`
+- PHPUnit 11: `php artisan test` (or `composer test`, which runs `config:clear` first)
+- In-memory SQLite (`DB_DATABASE=:memory:`, `QUEUE_CONNECTION=sync`), all tests use `RefreshDatabase`
+- 12 tests: 2 Unit (isAdmin, cart total), 2 Feature (products pagination, cart auth guard), 8 Breeze auth
+- Factories: User, Category, Product, Cart, CartItem — **no Order/OrderItem/Payment factories**
+- `User::factory()->admin()` creates admin role; `->unverified()` for unverified email
 
-## Framework quirks
-- Laravel 12: `bootstrap/app.js` uses `Application::configure(...)->withRouting(...)->create()`
-- Middleware aliases (`admin`, `verified`) registered in `bootstrap/app.php`
-- No `package.json`, `vite.config.*`, or Tailwind config exist — `npm` steps in `composer setup` will fail until frontend assets are added
-- `config/app.php` lacks `frontend_url` (normally added by Breeze API stack); email verification redirects to `/dashboard?verified=1`
-- `postman-collection.json` at repo root for API testing
-
-## API structure
+## API
 - **Public**: `GET /api/categories`, `GET /api/categories/{id}`, `GET /api/products` (filter: `category_id`, `search`, `min_price`, `max_price`, `per_page`), `GET /api/products/{id}`
 - **Auth** (Sanctum): `/api/cart`, `/api/checkout`, `/api/orders`, `/api/orders/{id}/pay`
 - **Admin** (Sanctum + `admin` middleware): `/api/admin/categories/*`, `/api/admin/products/*`, `/api/admin/orders/*`
 - Breeze auth routes: register, login, logout, forgot-password, reset-password, email-verify
 
-## Database
-- 12 migrations (users + role, cache, jobs, categories, products, carts, cart_items, orders, order_items, payments, personal_access_tokens)
-- Factories: User, Category, Product, Cart, CartItem
-- Models: User(1:1 Cart, 1:N Order), Category(1:N Product), Cart(1:N CartItem), Order(1:N OrderItem, 1:1 Payment)
-- Order statuses: `pending`, `paid`, `processed`, `shipped`, `delivered`, `cancelled`
-
 ## Key files
 | Path | Purpose |
 |---|---|
-| `routes/api.php` | All API endpoint definitions |
+| `routes/api.php` | API endpoints |
+| `routes/web.php` | Blade web routes |
 | `bootstrap/app.php` | Middleware registration, routing config |
-| `app/Http/Controllers/Api/*.php` | Public API controllers |
-| `app/Http/Controllers/Api/Admin/*.php` | Admin API controllers |
 | `app/Http/Middleware/AdminMiddleware.php` | Admin role check (`$request->user()->isAdmin()`) |
 | `app/Http/Resources/*.php` | API resource transformers |
 | `app/Policies/*.php` | Gates for admin-only actions |
-| `postman-collection.json` | Interactive API docs for Postman |
+| `postman-collection.json` | Interactive API docs |
 
-## Constraints
-- No CI/CD, no pre-commit hooks, no Docker config
-- No ESLint/Prettier/PHPStan/Psalm
+## Quirks
+- No `package.json`, `vite.config.*`, or Tailwind config
+- No `config('app.frontend_url')` (normally added by Breeze API); email verification redirects to `/dashboard?verified=1`
 - Pest plugin allowed in `composer.json` but Pest not installed

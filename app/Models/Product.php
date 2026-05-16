@@ -35,7 +35,13 @@ class Product extends Model
     {
         static::creating(function (Product $product): void {
             if (empty($product->slug)) {
-                $product->slug = Str::slug($product->name);
+                $slug = Str::slug($product->name);
+                $original = $slug;
+                $i = 1;
+                while (Product::where('slug', $slug)->exists()) {
+                    $slug = $original . '-' . $i++;
+                }
+                $product->slug = $slug;
             }
         });
     }

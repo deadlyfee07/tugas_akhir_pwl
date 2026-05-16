@@ -12,18 +12,21 @@
     </div>
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <a href="/admin/products" class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg hover:border-primary-200 transition block">
             <p class="text-sm text-gray-500">Total Produk</p>
             <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['products'] }}</p>
-        </div>
-        <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <p class="text-xs text-primary-600 mt-2 font-medium">Kelola Produk &rarr;</p>
+        </a>
+        <a href="/admin/categories" class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg hover:border-primary-200 transition block">
             <p class="text-sm text-gray-500">Total Kategori</p>
             <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['categories'] }}</p>
-        </div>
-        <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <p class="text-xs text-primary-600 mt-2 font-medium">Kelola Kategori &rarr;</p>
+        </a>
+        <a href="/admin/orders" class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg hover:border-primary-200 transition block">
             <p class="text-sm text-gray-500">Total Pesanan</p>
             <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['orders'] }}</p>
-        </div>
+            <p class="text-xs text-primary-600 mt-2 font-medium">Kelola Pesanan &rarr;</p>
+        </a>
         <div class="bg-white rounded-xl border border-gray-200 p-6">
             <p class="text-sm text-gray-500">Pesanan Tertunda</p>
             <p class="text-3xl font-bold text-yellow-600 mt-1">{{ $stats['pending_orders'] }}</p>
